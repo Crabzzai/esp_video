@@ -1,0 +1,18 @@
+{
+    "name": "esp_video",
+    "version": "1.0.0",
+    "description": "ESP32 Video Streaming Library",
+    "author": "Crabzzai",
+    "maintainer": "Crabzzai",
+    "keywords": ["ESP32", "ESP32-CAM", "Video Streaming", "SD Card Recording", "MJPEG", "Camera", "TFT Display"],
+    "frameworks": "arduino",
+    "platforms": "espressif32",
+    "dependencies": {
+        "bodmer/TFT_eSPI": "^2.5.0",
+        "bodmer/TJpg_Decoder": "^1.1.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Crabzzai/esp_video.git"
+    }
+}

@@ -1,0 +1,68 @@
+#ifndef ESP_STREAMER_H
+#define ESP_STREAMER_H
+
+#include <WiFi.h>
+#include <WiFiUdp.h>
+#include "esp_camera.h"
+#include <EspSharedConfig.h>
+#include <EspCameraSource.h>
+
+class EspStreamer {
+    private:
+        WiFiUDP _udp;
+        const char* _target_ip;
+        uint16_t _udp_port;
+        static const uint16_t MAX_PAYLOAD = 1436; // safely below 1472 MTU limit
+        const char* _ssid;
+        const char* _password;
+        EspCameraSource cameraSource;
+
+        inline void send(camera_fb_t* frame) {
+            // Split the frame into chunks and send each chunk over UDP
+            // IMPORTANT: implement this section
+        }
+
+    public:
+        inline void begin(const char* ssid, const char* password) {
+            _ssid = ssid;
+            _password = password;
+            WiFi.mode(WIFI_STA);
+            WiFi.begin(_ssid, _password);
+            Serial.print("Connecting to WiFi");
+            while (WiFi.status() != WL_CONNECTED) {
+                delay(500);
+                Serial.print(".");
+            }
+            Serial.println();
+            Serial.print("Connected to WiFi. IP address: ");
+            Serial.println(WiFi.localIP());
+            Serial.println();
+
+            while (;;) {
+                int packetSize = _udp.parsePacket();
+                if (packetSize > sizeof(Command)) {
+                    Command cmd;
+                    _upd.read((uint8_t*)&cmd, sizeof(cmd));
+
+                    IPAddress receiver_ip = _udp.remoteIP();
+
+                    _target_ip = receiver_ip;
+                    _udp_port = cmd.udp_port;
+                    break;
+                }
+            }
+            Serial.println("Starting video stream.");
+
+            cameraSource.begin();
+        }
+
+        inline void loop() {
+            camera_fb_t* frame = cameraSource.getFrame();
+            if (frame) {
+                send(frame);
+                cameraSource.returnFrame(frame);
+            }
+        }
+}
+
+#endif
