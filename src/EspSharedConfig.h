@@ -8,4 +8,6 @@ struct Command {
     uint16_t udp_port;
 };
 
+#define DISCOVERY_PORT 5000
+
 #endif

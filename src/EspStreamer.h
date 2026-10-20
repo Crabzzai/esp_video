@@ -4,8 +4,8 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include "esp_camera.h"
-#include <EspSharedConfig.h>
-#include <EspCameraSource.h>
+#include "EspSharedConfig.h"
+#include "EspCameraSource.h"
 
 class EspStreamer {
     private:
@@ -53,6 +53,8 @@ class EspStreamer {
             Serial.println(WiFi.localIP());
             Serial.println();
 
+            Serial.println("Listening for broadcast of UDP port..");
+            _udp.begin(DISCOVERY_PORT);
             while (true) {
                 int packetSize = _udp.parsePacket();
                 if (packetSize > sizeof(Command)) {

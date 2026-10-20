@@ -5,7 +5,7 @@
 #include <WiFiUdp.h>
 #include <TFT_eSPI.h>
 #include <TJpg_Decoder.h>
-#include <EspSharedConfig.h>
+#include "EspSharedConfig.h"
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -110,10 +110,10 @@ class EspReceiver {
                 }
             }
 
-            if (millis() % 2000 < 10) {
+            if (millis() - _last_broadcast >= 2000) {
                 Command cmd = {0x01, _udp_port};
 
-                _udp.beginPacket(_broadcast_ip, _udp_port);
+                _udp.beginPacket(_broadcast_ip, DISCOVERY_PORT);
                 _udp.write((uint8_t*)&cmd, sizeof(cmd));
                 _udp.endPacket();
 
