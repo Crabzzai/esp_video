@@ -14,5 +14,8 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/Crabzzai/esp_video.git"
+    },
+    "build": {
+        "includeDir": "src"
     }
 }
