@@ -5,6 +5,7 @@
 #include <WiFiUdp.h>
 #include <TFT_eSPI.h>
 #include <TJpg_Decoder.h>
+#include <EspSharedConfig.h>
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -89,8 +90,8 @@ class EspReceiver {
                 uint8_t packet[1472];
                 _udp.read(packet, packetSize);
 
-                uint16_t chunk_id = *((uint16_t)packet);
-                size_t total_len = *((size_t*)(paclet + 2));
+                uint16_t chunk_id = *((uint16_t*)packet);
+                size_t total_len = *((size_t*)(packet + 2));
                 size_t payload_size = packetSize - 6;
 
                 if (chunk_id == 0) {
@@ -110,7 +111,7 @@ class EspReceiver {
             }
 
             if (millis() % 2000 < 10) {
-                Command cmd = {0x01, udpPort};
+                Command cmd = {0x01, _udp_port};
 
                 _udp.beginPacket(_broadcast_ip, _udp_port);
                 _udp.write((uint8_t*)&cmd, sizeof(cmd));
@@ -119,6 +120,6 @@ class EspReceiver {
                 _last_broadcast = millis();
             }
         }
-}
+};
 
 #endif

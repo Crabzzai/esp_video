@@ -68,6 +68,6 @@ class EspCameraSource {
         inline void returnFrame(camera_fb_t* fb) {
             if (fb) esp_camera_fb_return(fb);
         }
-}
+};
 
 #endif

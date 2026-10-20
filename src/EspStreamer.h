@@ -10,7 +10,7 @@
 class EspStreamer {
     private:
         WiFiUDP _udp;
-        const char* _target_ip;
+        char* _target_ip;
         uint16_t _udp_port;
         static const uint16_t MAX_PAYLOAD = 1436; // safely below 1472 MTU limit
         const char* _ssid;
@@ -38,18 +38,19 @@ class EspStreamer {
             Serial.println(WiFi.localIP());
             Serial.println();
 
-            while (;;) {
+            while (true) {
                 int packetSize = _udp.parsePacket();
                 if (packetSize > sizeof(Command)) {
                     Command cmd;
-                    _upd.read((uint8_t*)&cmd, sizeof(cmd));
+                    _udp.read((uint8_t*)&cmd, sizeof(cmd));
 
                     IPAddress receiver_ip = _udp.remoteIP();
 
-                    _target_ip = receiver_ip;
+                    _target_ip = strdup(receiver_ip.toString().c_str());
                     _udp_port = cmd.udp_port;
                     break;
                 }
+                delay(1);
             }
             Serial.println("Starting video stream.");
 
@@ -63,6 +64,6 @@ class EspStreamer {
                 cameraSource.returnFrame(frame);
             }
         }
-}
+};
 
 #endif
