@@ -18,8 +18,23 @@ class EspStreamer {
         EspCameraSource cameraSource;
 
         inline void send(camera_fb_t* frame) {
-            // Split the frame into chunks and send each chunk over UDP
-            // IMPORTANT: implement this section
+            if (!frame) return;
+
+            size_t bytes_sent = 0;
+            uint16_t chunk_id = 0;
+
+            while (bytes_sent < frame->len) {
+                size_t chunk_size = (frame->len - bytes_sent > MAX_PAYLOAD) ? MAX_PAYLOAD : (frame->len - bytes_sent);
+
+                _udp.beginPacket(_target_ip, _udp_port);
+                _udp.write((uint8_t*)&chunk_id, 2);
+                _udp.write((uint8_t*)&frame->len, 4);
+                _udp.write(frame->buf + bytes_sent, chunk_size);
+                _udp.endPacket();
+
+                bytes_sent += chunk_size;
+                chunk_id++;
+            }
         }
 
     public:
