@@ -38,7 +38,7 @@ class EspStreamer {
         }
 
     public:
-        inline void begin(const char* ssid, const char* password) {
+        inline bool begin(const char* ssid, const char* password) {
             _ssid = ssid;
             _password = password;
             WiFi.mode(WIFI_STA);
@@ -70,6 +70,7 @@ class EspStreamer {
             Serial.println("Starting video stream.");
 
             cameraSource.begin();
+            return true;
         }
 
         inline void loop() {
