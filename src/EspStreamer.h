@@ -16,6 +16,7 @@ class EspStreamer {
         const char* _ssid;
         const char* _password;
         EspCameraSource cameraSource;
+        bool _has_started;
 
         inline void send(camera_fb_t* frame) {
             if (!frame) return;
@@ -55,9 +56,14 @@ class EspStreamer {
 
             Serial.println("Listening for broadcast of UDP port..");
             _udp.begin(DISCOVERY_PORT);
-            while (true) {
+
+            return true;
+        }
+
+        inline void loop() {
+            if (!_has_started) {
                 int packetSize = _udp.parsePacket();
-                if (packetSize > sizeof(Command)) {
+                if (packetSize >= sizeof(Command)) {
                     Command cmd;
                     _udp.read((uint8_t*)&cmd, sizeof(cmd));
 
@@ -65,21 +71,18 @@ class EspStreamer {
 
                     _target_ip = strdup(receiver_ip.toString().c_str());
                     _udp_port = cmd.udp_port;
-                    break;
+
+                    Serial.println("Starting video stream.");
+                    cameraSource.begin();
+
+                    _has_started = true;
                 }
-                delay(1);
-            }
-            Serial.println("Starting video stream.");
-
-            cameraSource.begin();
-            return true;
-        }
-
-        inline void loop() {
-            camera_fb_t* frame = cameraSource.getFrame();
-            if (frame) {
-                send(frame);
-                cameraSource.returnFrame(frame);
+            } else {
+                camera_fb_t* frame = cameraSource.getFrame();
+                if (frame) {
+                    send(frame);
+                    cameraSource.returnFrame(frame);
+                }
             }
         }
 };
